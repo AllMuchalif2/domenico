@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function LocationPanel({ locationName, onAutoDetect, loading, toggleSearch }) {
+export default function LocationPanel({ locationName, onAutoDetect, loading, toggleSearch, searchOpen }) {
   // Truncate logic if needed, although textOverflow ellipsis does it via CSS
   return (
     <div className="nerv-panel" style={{ 
@@ -45,8 +45,9 @@ export default function LocationPanel({ locationName, onAutoDetect, loading, tog
         style={{ 
           height: '32px', 
           padding: '0 0.75rem', 
-          border: '1px solid var(--nerv-orange)', 
-          color: 'var(--nerv-orange)', 
+          border: `1px solid var(--nerv-${searchOpen ? 'red' : 'orange'})`, 
+          color: `var(--nerv-${searchOpen ? 'red' : 'orange'})`, 
+          backgroundColor: searchOpen ? 'rgba(204, 0, 0, 0.1)' : 'transparent',
           fontSize: '11px',
           fontWeight: 'bold',
           display: 'flex',
@@ -54,11 +55,23 @@ export default function LocationPanel({ locationName, onAutoDetect, loading, tog
           gap: '4px'
         }}
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        SEARCH
+        {searchOpen ? (
+           <>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              CLOSE
+           </>
+        ) : (
+           <>
+             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+               <circle cx="11" cy="11" r="8"></circle>
+               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+             </svg>
+             SEARCH
+           </>
+        )}
       </button>
 
       {/* Auto Detect Button */}
