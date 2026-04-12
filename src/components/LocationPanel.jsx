@@ -1,0 +1,86 @@
+import React from 'react';
+
+export default function LocationPanel({ locationName, onAutoDetect, loading, toggleSearch }) {
+  // Truncate logic if needed, although textOverflow ellipsis does it via CSS
+  return (
+    <div className="nerv-panel" style={{ 
+      margin: '0', 
+      borderLeft: 'none', 
+      borderRight: 'none', 
+      borderBottom: '1px solid var(--nerv-muted)',
+      padding: '0 0.5rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      height: '100%',
+      gap: '0.5rem'
+    }}>
+      {/* Truncated Location Name */}
+      <div style={{ 
+        flex: 1, 
+        minWidth: 0, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center' 
+      }}>
+         <span style={{ fontSize: '9px', color: 'var(--nerv-orange)' }}>CURRENT LOCATION</span>
+         {loading ? (
+          <span className="blink" style={{ color: 'var(--nerv-orange)', fontSize: '12px', whiteSpace: 'nowrap' }}>[ ACQUIRING... ]</span>
+         ) : (
+          <span style={{ 
+            fontSize: '14px', 
+            whiteSpace: 'nowrap', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis',
+            color: 'var(--nerv-text)'
+          }}>
+            {locationName || '[ REQUIRED ]'}
+          </span>
+         )}
+      </div>
+      
+      {/* Search Toggle Button */}
+      <button 
+        onClick={toggleSearch}
+        style={{ 
+          height: '32px', 
+          padding: '0 0.75rem', 
+          border: '1px solid var(--nerv-orange)', 
+          color: 'var(--nerv-orange)', 
+          fontSize: '11px',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px'
+        }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        SEARCH
+      </button>
+
+      {/* Auto Detect Button */}
+      <button 
+        onClick={onAutoDetect}
+        className="nerv-button clip-card"
+        style={{ 
+          height: '32px', 
+          padding: '0 0.75rem', 
+          minHeight: 'auto',
+          fontSize: '11px',
+          backgroundColor: 'rgba(255, 102, 0, 0.1)',
+          margin: 0
+        }}
+        title="Auto Detect"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+
+    </div>
+  );
+}
