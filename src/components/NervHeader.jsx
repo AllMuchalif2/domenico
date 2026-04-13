@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 export default function NervHeader() {
   const [time, setTime] = useState('');
+  const [muted, setMuted] = useState(
+    () => localStorage.getItem('nerv_muted') === 'true'
+  );
+
+  const toggleMute = () => {
+    setMuted(m => {
+      localStorage.setItem('nerv_muted', !m);
+      return !m;
+    });
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -31,8 +41,13 @@ export default function NervHeader() {
           NERV WEATHER DIVISION
         </span>
       </div>
-      <div style={{ fontSize: '14px', color: 'var(--nerv-orange)', fontWeight: 'bold' }}>
-        {time}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <button onClick={toggleMute} style={{ background: 'transparent', border: '1px solid var(--nerv-orange)', color: 'var(--nerv-orange)', padding: '2px 6px', fontSize: '10px', cursor: 'pointer', fontFamily: 'monospace' }}>
+          {muted ? 'UNMUTE' : 'MUTE'}
+        </button>
+        <div style={{ fontSize: '14px', color: 'var(--nerv-orange)', fontWeight: 'bold' }}>
+          {time}
+        </div>
       </div>
     </header>
   );

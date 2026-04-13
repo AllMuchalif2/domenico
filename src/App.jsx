@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SearchPanel from './components/SearchPanel';
 import EvaAlert from './components/EvaAlert';
+import NervActivation from './components/NervActivation';
+import HourlyForecast from './components/HourlyForecast';
 
 import { useGeolocation } from './hooks/useGeolocation';
 import { useReverseGeocode } from './hooks/useReverseGeocode';
 import { useWeather } from './hooks/useWeather';
 import { getAlertLevel } from './utils/alertLevel';
+import { playWarningBeep, playSiren, stopSiren, playDismissBeep } from './utils/nervAudio';
 
 // SVG Icons
 const IconLocation = () => <svg width="14" height="14" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
@@ -15,6 +18,7 @@ const IconClose = () => <svg width="12" height="12" viewBox="0 0 24 24"><line x1
 const IconHeartbeat = () => <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>;
 const IconDroplet = () => <svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>;
 const IconWind = () => <svg width="14" height="14" viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"></path></svg>;
+const IconPressure = () => <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 
 export default function App() {
   const { location, getLocation, loading: geoLoading } = useGeolocation();
@@ -66,6 +70,51 @@ export default function App() {
   const [dismissAlert, setDismissAlert] = useState(false);
   useEffect(() => { setDismissAlert(false); }, [weatherData]);
 
+  const [muted, setMuted] = useState(
+    () => localStorage.getItem('nerv_muted') === 'true'
+  );
+
+  const toggleMute = () => {
+    setMuted(m => {
+      localStorage.setItem('nerv_muted', !m);
+      return !m;
+    });
+  };
+
+  const prevAlertRef = useRef('NORMAL');
+
+  useEffect(() => {
+    const prev = prevAlertRef.current;
+    const curr = alertLevel;
+
+    if (curr === prev) return;
+
+    const grid = document.querySelector('.app-grid');
+    if (grid) {
+      grid.classList.remove('alert-caution', 'alert-warning', 'alert-evangelion');
+      if (curr === 'CAUTION') grid.classList.add('alert-caution');
+      if (curr === 'WARNING') { 
+        grid.classList.add('alert-warning'); 
+        if (!muted) playWarningBeep(); 
+      }
+      if (curr === 'EVANGELION') { 
+        grid.classList.add('alert-evangelion'); 
+        if (!muted) playSiren(); 
+      }
+    }
+
+    if (prev === 'EVANGELION' && curr !== 'EVANGELION') stopSiren();
+
+    prevAlertRef.current = curr;
+  }, [alertLevel, muted]);
+
+  function handleDismiss() {
+    stopSiren();
+    if (!muted) playDismissBeep();
+    setDismissAlert(true);
+    setTimeout(() => setDismissAlert(false), 30000);
+  }
+
   if (init) {
     return <div style={{ height: '100dvh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="blink" style={{ color: 'var(--nerv-orange)', fontSize: '1.5rem' }}>[ SYSTEM INITIALIZING... ]</div>
@@ -91,8 +140,9 @@ export default function App() {
 
   return (
     <>
+      <NervActivation />
       <div className="scanline-bg" />
-      <div className="app-grid">
+      <div className="app-container app-grid">
         
         {/* ROW 1: HEADER */}
         <header className="master-header">
@@ -102,15 +152,18 @@ export default function App() {
                 BMKG MEWS / REGION: {placeName ? placeName.split(',').pop().trim() : 'UNKNOWN'}
              </div>
            </div>
-           <div className="header-right">
+           <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+             <button onClick={toggleMute} style={{ background: 'transparent', border: '1px solid var(--nerv-orange)', color: 'var(--nerv-orange)', padding: '2px 6px', fontSize: '10px', cursor: 'pointer', fontFamily: 'monospace' }}>
+               {muted ? '[ UNMUTE ]' : '[ MUTE ]'}
+             </button>
              <div className="status-label">STATUS:</div>
              <div className="status-value blink" style={{ color: getAlertColor() }}>{alertLevel}</div>
            </div>
         </header>
 
         {/* ROW 2: MAIN DASHBOARD */}
-        <main className="dashboard-main">
-          {searchOpen ? (
+        {searchOpen ? (
+          <main className="dashboard-main" style={{ margin: '0 16px' }}>
             <div style={{ flex: 1, border: '1px solid var(--nerv-orange)', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
                <div className="target-loc-header" style={{ marginBottom: '1rem' }}>
                  <span><IconSearch /> TARGET ACQUISITION OVERRIDE</span>
@@ -120,12 +173,14 @@ export default function App() {
                </div>
                <SearchPanel onLocationSelect={handleLocationSelect} />
             </div>
-          ) : (
-            <div className="dashboard-grid">
+          </main>
+        ) : (
+          <>
+            <main className="panels-row">
                
                {/* LEFT COLUMN */}
-               <div className="dash-left">
-                  <div className="target-loc-header">
+               <div className="main-panel-left dash-left">
+                  <div className="target-loc-header location-row">
                      <span><IconLocation /> TARGET LOCATION</span>
                      <div className="action-buttons">
                         <button onClick={getLocation} title="Auto Detect">{geoLoading || placeLoading ? <span className="blink">...</span> : <IconCrosshair />}</button>
@@ -133,52 +188,77 @@ export default function App() {
                      </div>
                   </div>
                   
-                  <div className="huge-location">
+                  <div className="huge-location" style={{ fontSize: '2rem', marginTop: '1rem' }}>
                      {formatLocationName(placeName)}
                      {weatherError && <div style={{fontSize: '1rem', color: 'var(--nerv-red)'}}>[ LINK ERROR: {weatherError} ]</div>}
                   </div>
 
-                  <div className="conditions-header">CURRENT CONDITIONS</div>
-                  <div className="huge-conditions">
-                     <span className="condition-text" style={{color: 'var(--nerv-green)'}}>
-                       {weatherData?.current ? weatherData.current.weather[0].description : (weatherLoading ? 'SCANNING...' : 'NO DATA')}
-                     </span>
-                     {weatherData?.current && (
-                       <img src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`} alt="icon" style={{ width: '80px', height: '80px', filter: 'hue-rotate(90deg) brightness(1.5)' }} />
+                  <div className="weather-center">
+                     {weatherData?.current ? (
+                       <>
+                         <img 
+                           src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@4x.png`} 
+                           alt="icon" 
+                           className="weather-icon-large" 
+                         />
+                         <div className="temp-main">
+                           {Math.round(weatherData.current.main.temp)}<span className="temp-unit">°C</span>
+                         </div>
+                         <div className="condition-main">
+                           {weatherData.current.weather[0].description}
+                         </div>
+                         <div className="weather-meta">
+                           <span>FEELS LIKE {Math.round(weatherData.current.main.feels_like)}°C</span>
+                           <span>·</span>
+                           <span>VISIBILITY {(weatherData.current.visibility / 1000).toFixed(1)}KM</span>
+                         </div>
+                       </>
+                     ) : (
+                       <div className="blink condition-main" style={{color: 'var(--nerv-muted)'}}>
+                         {weatherLoading ? 'SCANNING...' : 'NO DATA'}
+                       </div>
                      )}
                   </div>
                </div>
 
                {/* RIGHT COLUMN */}
-               <div className="dash-right">
+               <div className="panel-right">
                   {weatherData?.current ? (
                      <>
                         <div className="metric-card">
                            <div className="metric-header"><IconHeartbeat /> CORE TEMP</div>
-                           <div className="metric-value">{Math.round(weatherData.current.main.temp)} <span className="metric-unit">°C</span></div>
-                           <div className="metric-bar-bg"><div className="metric-bar-fill" style={{ width: `${(weatherData.current.main.temp / 50) * 100}%` }}></div></div>
+                           <div className="metric-value">{Math.round(weatherData.current.main.temp)}<span className="metric-unit">°C</span></div>
                         </div>
                         <div className="metric-card">
                            <div className="metric-header"><IconDroplet /> HUMIDITY</div>
-                           <div className="metric-value">{weatherData.current.main.humidity} <span className="metric-unit">%</span></div>
-                           <div className="metric-bar-bg"><div className="metric-bar-fill" style={{ width: `${weatherData.current.main.humidity}%` }}></div></div>
+                           <div className="metric-value">{weatherData.current.main.humidity}<span className="metric-unit">%</span></div>
                         </div>
                         <div className="metric-card">
-                           <div className="metric-header"><IconWind /> WIND VELOCITY</div>
-                           <div className="metric-value">{(weatherData.current.wind.speed * 3.6).toFixed(1)} <span className="metric-unit">KPH</span></div>
-                           <div className="metric-bar-bg"><div className="metric-bar-fill" style={{ width: `${Math.min((weatherData.current.wind.speed * 3.6) / 100 * 100, 100)}%` }}></div></div>
+                           <div className="metric-header"><IconWind /> WIND</div>
+                           <div className="metric-value">{(weatherData.current.wind.speed * 3.6).toFixed(1)}<span className="metric-unit">KPH</span></div>
+                        </div>
+                        <div className="metric-card">
+                           <div className="metric-header"><IconPressure /> PRESSURE</div>
+                           <div className="metric-value">{weatherData.current.main.pressure}<span className="metric-unit">HPA</span></div>
                         </div>
                      </>
                   ) : (
-                     <div style={{ flex: 1, border: '1px solid var(--nerv-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nerv-orange)' }} className="blink">
+                     <div style={{ gridColumn: '1 / -1', border: '1px solid var(--nerv-orange)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nerv-orange)' }} className="blink">
                         [ AWAITING TELEMETRY ]
                      </div>
                   )}
                </div>
 
-            </div>
-          )}
-        </main>
+            </main>
+
+            {/* ROW 3: HOURLY STRIP */}
+            {weatherData?.forecast && (
+              <div className="hourly-section">
+                <HourlyForecast forecastData={weatherData.forecast} />
+              </div>
+            )}
+          </>
+        )}
 
         {/* ROW 3: FOOTER */}
         <footer className="master-footer">
@@ -192,7 +272,7 @@ export default function App() {
             active={alertLevel === 'EVANGELION' && !dismissAlert} 
             temperature={weatherData?.current?.main?.temp}
             locationName={placeName}
-            onDismiss={() => setDismissAlert(true)}
+            onDismiss={handleDismiss}
           />
         </div>
       </div>
