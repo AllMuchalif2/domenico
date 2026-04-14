@@ -55,7 +55,7 @@ export default function NervActivation() {
           marginBottom: "3rem",
         }}
       >
-        Dynamic Operational Meteorological Evangelist Network Indonesian
+        Dynamic Operational Meteorological Evangelist Network of Indonesian
         Climate Oracle
       </p>
 
