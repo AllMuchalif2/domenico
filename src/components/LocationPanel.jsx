@@ -7,7 +7,7 @@ export default function LocationPanel({ locationName, onAutoDetect, loading, tog
       margin: '0', 
       borderLeft: 'none', 
       borderRight: 'none', 
-      borderBottom: '1px solid var(--nerv-muted)',
+      borderBottom: '1px solid var(--col-gray-dim)',
       padding: '0 0.5rem',
       display: 'flex',
       alignItems: 'center',
@@ -23,16 +23,16 @@ export default function LocationPanel({ locationName, onAutoDetect, loading, tog
         flexDirection: 'column', 
         justifyContent: 'center' 
       }}>
-         <span style={{ fontSize: '9px', color: 'var(--nerv-orange)' }}>CURRENT LOCATION</span>
+         <span style={{ fontSize: '9px', color: 'var(--col-primary)' }}>CURRENT LOCATION</span>
          {loading ? (
-          <span className="blink" style={{ color: 'var(--nerv-orange)', fontSize: '12px', whiteSpace: 'nowrap' }}>[ ACQUIRING... ]</span>
+          <span className="blink" style={{ color: 'var(--col-primary)', fontSize: '12px', whiteSpace: 'nowrap' }}>[ ACQUIRING... ]</span>
          ) : (
           <span style={{ 
             fontSize: '14px', 
             whiteSpace: 'nowrap', 
             overflow: 'hidden', 
             textOverflow: 'ellipsis',
-            color: 'var(--nerv-text)'
+            color: 'var(--col-text-primary)'
           }}>
             {locationName || '[ REQUIRED ]'}
           </span>
@@ -83,7 +83,7 @@ export default function LocationPanel({ locationName, onAutoDetect, loading, tog
           padding: '0 0.75rem', 
           minHeight: 'auto',
           fontSize: '11px',
-          backgroundColor: 'rgba(255, 102, 0, 0.1)',
+          backgroundColor: 'rgba(90, 44, 160, 0.1)',
           margin: 0
         }}
         title="Auto Detect"

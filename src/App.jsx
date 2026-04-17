@@ -5,6 +5,48 @@ import NervActivation from "./components/NervActivation";
 import HourlyForecast from "./components/HourlyForecast";
 
 import { useGeolocation } from "./hooks/useGeolocation";
+import { useScramble } from "./hooks/useScramble";
+
+function LiveClock() {
+  const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setTime(
+        now.toLocaleTimeString("id-ID", {
+          timeZone: "Asia/Jakarta",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })
+      );
+      setDate(
+        now.toLocaleDateString("id-ID", {
+          timeZone: "Asia/Jakarta",
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        }).replace(/\//g, ".")
+      );
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="live-clock">
+      <span className="clock-label">WIB</span>
+      <span className="clock-time">{time}</span>
+      <span className="clock-date">{date}</span>
+    </div>
+  );
+}
+
 import { useReverseGeocode } from "./hooks/useReverseGeocode";
 import { useWeather } from "./hooks/useWeather";
 import { getAlertLevel } from "./utils/alertLevel";
@@ -83,6 +125,64 @@ export default function App() {
     loading: weatherLoading,
     error: weatherError,
   } = useWeather(coords?.lat, coords?.lon);
+
+  const [locateState, setLocateState] = useState('idle');
+  const handleLocate = () => {
+    setLocateState('locating');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocateState('success');
+        setTimeout(() => setLocateState('idle'), 2000);
+        const newLoc = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        setCoords(newLoc);
+        getPlaceName(newLoc.lat, newLoc.lon).then((name) => {
+          if (name) {
+            localStorage.setItem(
+              "domenico_location",
+              JSON.stringify({ ...newLoc, name })
+            );
+          }
+        });
+        setSearchOpen(false);
+      },
+      (err) => {
+        setLocateState('error');
+        setTimeout(() => setLocateState('idle'), 3000);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const locateLabel = {
+    idle:     '⊙ LOCATE',
+    locating: '◌ ACQUIRING...',
+    success:  '● LOCATED',
+    error:    '✕ DENIED',
+  };
+
+  const [isChanging, setIsChanging] = useState(false);
+  const prevDataRef = useRef(null);
+
+  useEffect(() => {
+    if (!weatherData?.current) return;
+    if (!prevDataRef.current) {
+      prevDataRef.current = weatherData;
+      return;
+    }
+    if (weatherData.current.dt !== prevDataRef.current.current?.dt) {
+      setIsChanging(true);
+      const timer = setTimeout(() => {
+        setIsChanging(false);
+        prevDataRef.current = weatherData;
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [weatherData]);
+
+  const displayTemp = useScramble(weatherData?.current ? Math.round(weatherData.current.main.temp) : "  --  ", 600);
+  const displayHumid = useScramble(weatherData?.current ? weatherData.current.main.humidity : "  --  ", 500);
+  const displayWind = useScramble(weatherData?.current ? (weatherData.current.wind.speed * 3.6).toFixed(1) : "  --  ", 550);
+  const displayPress = useScramble(weatherData?.current ? weatherData.current.main.pressure : "  --  ", 480);
 
   useEffect(() => {
     const cached = localStorage.getItem("domenico_location");
@@ -194,7 +294,7 @@ export default function App() {
       >
         <div
           className="blink"
-          style={{ color: "var(--nerv-orange)", fontSize: "1.5rem" }}
+          style={{ color: "var(--col-primary)", fontSize: "1.5rem" }}
         >
           [ SYSTEM INITIALIZING... ]
         </div>
@@ -213,10 +313,10 @@ export default function App() {
   };
 
   const getAlertColor = () => {
-    if (alertLevel === "NORMAL") return "var(--nerv-green)";
-    if (alertLevel === "CAUTION") return "#FFCC00";
-    if (alertLevel === "WARNING") return "var(--nerv-highlight)";
-    return "var(--nerv-red)";
+    if (alertLevel === "NORMAL") return "var(--col-green)";
+    if (alertLevel === "CAUTION") return "var(--col-alert-caution)";
+    if (alertLevel === "WARNING") return "var(--col-primary-bright)";
+    return "#CC0000";
   };
 
   return (
@@ -244,8 +344,8 @@ export default function App() {
               onClick={toggleMute}
               style={{
                 background: "transparent",
-                border: "1px solid var(--nerv-orange)",
-                color: "var(--nerv-orange)",
+                border: "1px solid var(--col-primary)",
+                color: "var(--col-primary)",
                 padding: "2px 6px",
                 fontSize: "10px",
                 cursor: "pointer",
@@ -254,12 +354,15 @@ export default function App() {
             >
               {muted ? "[ UNMUTE ]" : "[ MUTE ]"}
             </button>
-            <div className="status-label">STATUS:</div>
-            <div
-              className="status-value blink"
-              style={{ color: getAlertColor() }}
-            >
-              {alertLevel}
+            <LiveClock />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px' }}>
+              <div className="status-label">STATUS:</div>
+              <div
+                className="status-value blink"
+                style={{ color: getAlertColor() }}
+              >
+                {alertLevel}
+              </div>
             </div>
           </div>
         </header>
@@ -270,7 +373,7 @@ export default function App() {
             <div
               style={{
                 flex: 1,
-                border: "1px solid var(--nerv-orange)",
+                border: "1px solid var(--col-primary)",
                 padding: "1rem",
                 display: "flex",
                 flexDirection: "column",
@@ -305,12 +408,15 @@ export default function App() {
                     <IconLocation /> TARGET LOCATION
                   </span>
                   <div className="action-buttons">
-                    <button onClick={getLocation} title="Auto Detect">
-                      {geoLoading || placeLoading ? (
-                        <span className="blink">...</span>
-                      ) : (
-                        <IconCrosshair />
-                      )}
+                    <button 
+                      onClick={handleLocate} 
+                      className={`btn-locate ${locateState === 'locating' ? 'locating' : ''}`}
+                      title="Gunakan lokasi GPS kamu"
+                    >
+                      <span className="locate-icon">
+                        {locateState === 'success' ? '●' : locateState === 'error' ? '✕' : locateState === 'locating' ? '◌' : '⊙'}
+                      </span>
+                      {locateLabel[locateState]}
                     </button>
                     <button onClick={() => setSearchOpen(true)}>
                       <IconSearch /> SEARCH
@@ -321,7 +427,7 @@ export default function App() {
                 <div className="location-name">
                   {formatLocationName(placeName)}
                   {weatherError && (
-                    <div style={{ fontSize: "1rem", color: "var(--nerv-red)" }}>
+                    <div style={{ fontSize: "1rem", color: "#CC0000" }}>
                       [ LINK ERROR: {weatherError} ]
                     </div>
                   )}
@@ -329,19 +435,22 @@ export default function App() {
 
                 <div className="weather-center">
                   {weatherLoading ? (
-                    <div className="acquiring-data">ACQUIRING DATA...</div>
+                    <>
+                      <div className="acquiring-data">ACQUIRING DATA...</div>
+                      <div className="temp-main" style={{ opacity: 0 }}>0<span className="temp-unit">°C</span></div>
+                    </>
                   ) : weatherData?.current ? (
                     <>
                       <img
                         src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@4x.png`}
                         alt="icon"
-                        className="weather-icon-large"
+                        className={`weather-icon-large ${isChanging ? 'changing' : ''}`}
                       />
                       <div className="temp-main">
-                        {Math.round(weatherData.current.main.temp)}
+                        {displayTemp}
                         <span className="temp-unit">°C</span>
                       </div>
-                      <div className="condition-main">
+                      <div className={`condition-main ${isChanging ? 'changing' : ''}`}>
                         {weatherData.current.weather[0].description}
                       </div>
                       <div className="weather-meta">
@@ -370,7 +479,7 @@ export default function App() {
                   ) : (
                     <div
                       className="blink condition-main"
-                      style={{ color: "var(--nerv-muted)" }}
+                      style={{ color: "var(--col-gray-dim)" }}
                     >
                       NO DATA
                     </div>
@@ -387,14 +496,14 @@ export default function App() {
                         <span className="label-code">SYS-01 //</span> CORE TEMP
                       </div>
                       <div className="metric-value">
-                        {Math.round(weatherData.current.main.temp)}
+                        {displayTemp}
                         <span className="metric-unit">°C</span>
                       </div>
                       <div className="metric-bar-track">
                         <div
                           className="metric-bar-fill normal"
                           style={{
-                            width: `${Math.min((weatherData.current.main.temp / 50) * 100, 100)}%`,
+                            width: `${weatherLoading ? 0 : Math.min((weatherData.current.main.temp / 50) * 100, 100)}%`,
                           }}
                         ></div>
                       </div>
@@ -404,14 +513,14 @@ export default function App() {
                         <span className="label-code">SYS-02 //</span> HUMIDITY
                       </div>
                       <div className="metric-value">
-                        {weatherData.current.main.humidity}
+                        {displayHumid}
                         <span className="metric-unit">%</span>
                       </div>
                       <div className="metric-bar-track">
                         <div
                           className={`metric-bar-fill ${weatherData.current.main.humidity > 90 ? "high" : "normal"}`}
                           style={{
-                            width: `${weatherData.current.main.humidity}%`,
+                            width: `${weatherLoading ? 0 : weatherData.current.main.humidity}%`,
                           }}
                         ></div>
                       </div>
@@ -421,14 +530,14 @@ export default function App() {
                         <span className="label-code">SYS-03 //</span> WIND VEL
                       </div>
                       <div className="metric-value">
-                        {(weatherData.current.wind.speed * 3.6).toFixed(1)}
+                        {displayWind}
                         <span className="metric-unit">KPH</span>
                       </div>
                       <div className="metric-bar-track">
                         <div
                           className="metric-bar-fill normal"
                           style={{
-                            width: `${Math.min(((weatherData.current.wind.speed * 3.6) / 100) * 100, 100)}%`,
+                            width: `${weatherLoading ? 0 : Math.min(((weatherData.current.wind.speed * 3.6) / 100) * 100, 100)}%`,
                           }}
                         ></div>
                       </div>
@@ -438,14 +547,14 @@ export default function App() {
                         <span className="label-code">SYS-04 //</span> PRESSURE
                       </div>
                       <div className="metric-value">
-                        {weatherData.current.main.pressure}
+                        {displayPress}
                         <span className="metric-unit">HPA</span>
                       </div>
                       <div className="metric-bar-track">
                         <div
                           className="metric-bar-fill normal"
                           style={{
-                            width: `${Math.max(Math.min(((weatherData.current.main.pressure - 970) / 60) * 100, 100), 0)}%`,
+                            width: `${weatherLoading ? 0 : Math.max(Math.min(((weatherData.current.main.pressure - 970) / 60) * 100, 100), 0)}%`,
                           }}
                         ></div>
                       </div>
@@ -455,11 +564,11 @@ export default function App() {
                   <div
                     style={{
                       gridColumn: "1 / -1",
-                      border: "1px solid var(--nerv-orange)",
+                      border: "1px solid var(--col-primary)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: "var(--nerv-orange)",
+                      color: "var(--col-primary)",
                     }}
                     className="blink nerv-panel"
                   >
@@ -489,6 +598,9 @@ export default function App() {
             <span className="footer-text-short">
               D.O.M.E.N.I.C.O WEATHER SYS
             </span>
+            <a href="https://github.com/AllMuchalif2/domenico" target="_blank" rel="noopener noreferrer" className="btn-credit" title="Source Code">
+              [ ⌥ SOURCE ]
+            </a>
           </div>
           <div className="footer-right">
             <span className="uplink-box"></span> UPLINK ESTABLISHED

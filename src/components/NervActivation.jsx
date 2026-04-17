@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { initAudio, playBootBeep } from "../utils/nervAudio";
+import logoUrl from "../assets/icon.svg";
 
 export default function NervActivation() {
   const [activated, setActivated] = useState(true); // default true before check
@@ -32,7 +33,7 @@ export default function NervActivation() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "#0a0a0a",
+        backgroundColor: "var(--col-bg)",
         color: "var(--nerv-orange, #ff5500)",
         zIndex: 9999,
         display: "flex",
@@ -44,14 +45,15 @@ export default function NervActivation() {
         fontFamily: "monospace", // Or standard app font
       }}
     >
-      <h1 style={{ fontSize: "3rem", margin: 0, letterSpacing: "0.1em" }}>
+      <img src={logoUrl} alt="DOMENICO LOGO" style={{ width: "120px", marginBottom: "1rem" }} />
+      <h1 style={{ fontSize: "3rem", margin: 0, letterSpacing: "0.1em", color: "var(--col-primary)" }}>
         DOMENICO
       </h1>
       <p
         style={{
           fontSize: "1rem",
           letterSpacing: "0.2em",
-          color: "var(--nerv-muted, #777)",
+          color: "var(--col-green)",
           marginBottom: "3rem",
         }}
       >
@@ -62,9 +64,9 @@ export default function NervActivation() {
       <button
         onClick={handleActivate}
         style={{
-          border: "2px solid var(--nerv-orange, #ff5500)",
+          border: "2px solid var(--col-primary)",
           backgroundColor: "transparent",
-          color: "var(--nerv-orange, #ff5500)",
+          color: "var(--col-primary)",
           padding: "1rem 3rem",
           fontSize: "1.5rem",
           cursor: "pointer",
@@ -74,12 +76,12 @@ export default function NervActivation() {
           fontFamily: "monospace",
         }}
         onMouseOver={(e) =>
-          (e.target.style.backgroundColor = "var(--nerv-orange, #ff5500)")
+          (e.target.style.backgroundColor = "var(--col-primary)")
         }
         onMouseOut={(e) => (e.target.style.backgroundColor = "transparent")}
-        onMouseEnter={(e) => (e.target.style.color = "#000")}
+        onMouseEnter={(e) => (e.target.style.color = "var(--col-bg)")}
         onMouseLeave={(e) =>
-          (e.target.style.color = "var(--nerv-orange, #ff5500)")
+          (e.target.style.color = "var(--col-primary)")
         }
       >
         [ ACTIVATE ]

@@ -1,16 +1,78 @@
-# React + Vite
+# D.O.M.E.N.I.C.O WEATHER SYS // EVA UNIT-01
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Dynamic Operational Meteorological Evangelist Network of Indonesian Climate Oracle**
 
-Currently, two official plugins are available:
+DOMENICO adalah aplikasi pemantau cuaca interaktif dengan antarmuka yang terinspirasi dari **Neon Genesis Evangelion (NERV / MAGI System)**. Dibangun menggunakan React dan OpenWeatherMap API, versi terbaru ini menggunakan skema warna ikonik **Evangelion Unit-01** (Ungu & Hijau Neon) serta menghadirkan animasi _scramble_ otentik setiap kali data metrik iklim ditarik dari satelit.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🌐 Live Preview
 
-## React Compiler
+Saksikan sistem MAGI beroperasi secara langsung pada tautan berikut:
+**&rarr; [DOMENICO Live Preview](https://domenico-unit.netlify.app/)**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🎯 Fitur Utama (Core Systems)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Evangelion Unit-01 Aesthetic:** Antarmuka bergaya taktis (Tactical GUI) khas MAGI System dengan palet warna ungu tua solid dan elemen data hijau neon.
+- **GPS Telemetry Link:** Tombol sinkronisasi `[ ⊙ LOCATE ]` untuk menarik lokasi akurat secara presisi dengan _loading indicator_ rotasional.
+- **Data Scrambling:** Hook kustom `useScramble` yang mensimulasikan proses dekripsi alfanumerik tiap kali metrik cuaca (Suhu, Kelembaban, Angin) diperbarui.
+- **Live Clock Sync:** Indikator Real-Time WIB Clock disinkronisasikan di _master header_ antarmuka.
+- **EVA Alert Status:** Sistem peringatan dinamis berbasis skala (Nominal / Caution / Warning / EVANGELION) dengan penyesuaian visual saat terjadi peringatan radikal, seperti efek scanline dan border-pulse.
+- **Mobile-Optimized Grid:** Layout kustom responsif 100dvh dan bebas-_scroll_ yang memberikan impresi Native App.
+
+---
+
+## 🛠 Tech Stack
+
+- **Framework:** [React 18](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Styling:** Vanilla CSS (`nerv.css` custom vars, flexbox, CSS Grid)
+- **Weather Engine:** [OpenWeatherMap API](https://openweathermap.org/api) (Current Weather Data & 5-Day/3-Hour Forecast)
+- **Geocoding:** Reverse Geocoding via OpenWeatherMap & Pencarian Kota via Emsifa API / Open-Meteo
+- **Icons:** Heroicons / Custom SVG
+
+---
+
+## 🚀 Cara Menjalankan Secara Lokal (Local Deployment)
+
+Untuk melakukan inisiasi proyek DOMENICO di mesin lokal Anda / _On-Premise Terminal_, ikuti prosedur standar di bawah ini:
+
+### 1. Kloning Repositori
+
+```bash
+git clone https://github.com/AllMuchalif2/domenico.git
+cd domenico
+```
+
+### 2. Instalasi Dependensi
+
+Pastikan [Node.js](https://nodejs.org/) sudah terinstal di sistem Anda.
+
+```bash
+npm install
+```
+
+### 3. Konfigurasi Variabel Lingkungan (Environment Variables)
+
+Buat file bernama `.env` di root folder proyek Anda. Anda membutuhkan API Key dari OpenWeatherMap:
+
+```env
+VITE_OPENWEATHER_API_KEY=masukkan_api_key_openweathermap_anda_di_sini
+```
+
+### 4. Eksekusi Server Development
+
+```bash
+npm run dev
+```
+
+### 5. Akses Terminal
+
+Setelah kompilasi selesai, buka _browser_ dengan alamat berikut untuk melihat GUI sistem:
+
+```
+http://localhost:5173
+```
+
+---
+
+> _"God's in his heaven. All's right with the world."_

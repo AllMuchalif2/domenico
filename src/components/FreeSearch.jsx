@@ -43,7 +43,7 @@ export default function FreeSearch({ onLocationSelect }) {
         onChange={(e) => setQuery(e.target.value)}
       />
       
-      {loading && <div style={{ color: 'var(--nerv-orange)' }} className="blink">[ SEARCHING SECURE DATABASE... ]</div>}
+      {loading && <div style={{ color: 'var(--col-primary)' }} className="blink">[ SEARCHING SECURE DATABASE... ]</div>}
       
       {results.length > 0 && (
         <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

@@ -1,8 +1,8 @@
 import React from 'react';
 
 export default function StatusBar({ level }) {
-  let borderColor = 'var(--nerv-orange)';
-  let textColor = 'var(--nerv-orange)';
+  let borderColor = 'var(--col-primary)';
+  let textColor = 'var(--col-primary)';
   let levelIndex = 0;
   
   if (level === 'NORMAL') {
@@ -10,16 +10,16 @@ export default function StatusBar({ level }) {
     textColor = '#00FF00';
     levelIndex = 1;
   } else if (level === 'CAUTION') {
-    borderColor = '#FFCC00';
-    textColor = '#FFCC00';
+    borderColor = 'var(--col-alert-caution)';
+    textColor = 'var(--col-alert-caution)';
     levelIndex = 2;
   } else if (level === 'WARNING') {
-    borderColor = 'var(--nerv-highlight)';
-    textColor = 'var(--nerv-highlight)';
+    borderColor = 'var(--col-primary-bright)';
+    textColor = 'var(--col-primary-bright)';
     levelIndex = 3;
   } else if (level === 'EVANGELION') {
-    borderColor = 'var(--nerv-red)';
-    textColor = 'var(--nerv-red)';
+    borderColor = '#CC0000';
+    textColor = '#CC0000';
     levelIndex = 4;
   }
 
@@ -30,7 +30,7 @@ export default function StatusBar({ level }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      borderBottom: `1px solid var(--nerv-muted)`,
+      borderBottom: `1px solid var(--col-gray-dim)`,
       height: '100%',
       padding: '0 0.5rem',
       backgroundColor: 'rgba(10, 10, 10, 0.5)'
@@ -50,7 +50,7 @@ export default function StatusBar({ level }) {
             style={{ 
               width: '12px', 
               height: '8px', 
-              backgroundColor: i <= levelIndex ? borderColor : 'var(--nerv-muted)',
+              backgroundColor: i <= levelIndex ? borderColor : 'var(--col-gray-dim)',
               opacity: i <= levelIndex ? 1 : 0.3
             }} 
           />

@@ -94,7 +94,7 @@ export default function CascadingDropdown({ onLocationSelect }) {
         {villages.map(v => <option key={v.code} value={v.code}>{v.name}</option>)}
       </select>
       
-      {loading && <div style={{ color: 'var(--nerv-orange)' }} className="blink">[ DOWNLOADING WILAYAH DATA... ]</div>}
+      {loading && <div style={{ color: 'var(--col-primary)' }} className="blink">[ DOWNLOADING WILAYAH DATA... ]</div>}
     </div>
   );
 }

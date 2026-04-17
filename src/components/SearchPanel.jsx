@@ -7,9 +7,9 @@ export default function SearchPanel({ onLocationSelect }) {
 
   return (
     <div style={{
-      borderLeft: '1px solid var(--nerv-orange)',
-      borderRight: '1px solid var(--nerv-orange)',
-      borderBottom: '1px solid var(--nerv-orange)',
+      borderLeft: '1px solid var(--col-primary)',
+      borderRight: '1px solid var(--col-primary)',
+      borderBottom: '1px solid var(--col-primary)',
       padding: '0.5rem',
       backgroundColor: 'rgba(10, 10, 10, 0.95)',
       height: '100%',

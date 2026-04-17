@@ -10,8 +10,8 @@ export default function Footer() {
       height: '100%',
       padding: '0 0.5rem',
       backgroundColor: 'rgba(10, 10, 10, 0.9)',
-      borderTop: '1px solid var(--nerv-muted)',
-      color: 'var(--nerv-muted)',
+      borderTop: '1px solid var(--col-gray-dim)',
+      color: 'var(--col-gray-dim)',
       fontSize: '11px',
       margin: 0
     }}>
