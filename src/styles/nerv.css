@@ -1190,10 +1190,10 @@ svg {
 
 /* BARU: LIVE CLOCK */
 .live-clock {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
   font-family: "Share Tech Mono", monospace;
 }
 

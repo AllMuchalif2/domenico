@@ -331,9 +331,12 @@ export default function App() {
               <span className="nerv-title-full">D.O.M.E.N.I.C.O</span>
               <span className="nerv-title-short">DOMENICO</span>
             </h1>
-            <div className="header-sub">
-              <span className="live-dot"></span>BMKG MEWS / REGION:{" "}
-              {placeName ? placeName.split(",").pop().trim() : "UNKNOWN"}
+            <div className="header-sub" style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+              <div>
+                <span className="live-dot"></span>REGION:{" "}
+                {placeName ? placeName.split(",").pop().trim() : "UNKNOWN"}
+              </div>
+              <LiveClock />
             </div>
           </div>
           <div
@@ -354,7 +357,6 @@ export default function App() {
             >
               {muted ? "[ UNMUTE ]" : "[ MUTE ]"}
             </button>
-            <LiveClock />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px' }}>
               <div className="status-label">STATUS:</div>
               <div

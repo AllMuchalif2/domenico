@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="src/assets/icon.svg" width="150" alt="DOMENICO Icon" />
+</p>
+
 # D.O.M.E.N.I.C.O WEATHER SYS // EVA UNIT-01
 
 **Dynamic Operational Meteorological Evangelist Network of Indonesian Climate Oracle**
 
-DOMENICO adalah aplikasi pemantau cuaca interaktif dengan antarmuka yang terinspirasi dari **Neon Genesis Evangelion (NERV / MAGI System)**. Dibangun menggunakan React dan OpenWeatherMap API, versi terbaru ini menggunakan skema warna ikonik **Evangelion Unit-01** (Ungu & Hijau Neon) serta menghadirkan animasi _scramble_ otentik setiap kali data metrik iklim ditarik dari satelit.
+DOMENICO adalah aplikasi pemantau cuaca interaktif dengan antarmuka yang terinspirasi dari **Neon Genesis Evangelion (NERV / MAGI System)**. Dibangun menggunakan React dan OpenWeatherMap API, Menggunakan skema warna ikonik **Evangelion Unit-01** (Ungu & Hijau Neon).
 
 ### 🌐 Live Preview
 
@@ -27,8 +31,8 @@ Saksikan sistem MAGI beroperasi secara langsung pada tautan berikut:
 - **Framework:** [React 18](https://reactjs.org/) + [Vite](https://vitejs.dev/)
 - **Styling:** Vanilla CSS (`nerv.css` custom vars, flexbox, CSS Grid)
 - **Weather Engine:** [OpenWeatherMap API](https://openweathermap.org/api) (Current Weather Data & 5-Day/3-Hour Forecast)
+- **Indonesian Location:** [Emsifa API](https://emsifa.github.io/api-wilayah-indonesia/docs/) (Provinsi, Kota, Kecamatan in Indonesia)
 - **Geocoding:** Reverse Geocoding via OpenWeatherMap & Pencarian Kota via Emsifa API / Open-Meteo
-- **Icons:** Heroicons / Custom SVG
 
 ---
 
