@@ -7,7 +7,7 @@ DOMENICO adalah aplikasi pemantau cuaca interaktif dengan antarmuka yang terinsp
 ### 🌐 Live Preview
 
 Saksikan sistem MAGI beroperasi secara langsung pada tautan berikut:
-**&rarr; [DOMENICO Live Preview](https://domenico-unit.netlify.app/)**
+**&rarr; [DOMENICO Live Preview](https://domenico-sys.netlify.app/)**
 
 ---
 
