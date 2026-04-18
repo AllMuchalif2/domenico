@@ -33,6 +33,7 @@ Saksikan sistem MAGI beroperasi secara langsung pada tautan berikut:
 - **Weather Engine:** [OpenWeatherMap API](https://openweathermap.org/api) (Current Weather Data & 5-Day/3-Hour Forecast)
 - **Indonesian Location:** [Emsifa API](https://emsifa.github.io/api-wilayah-indonesia/docs/) (Provinsi, Kota, Kecamatan in Indonesia)
 - **Geocoding:** Reverse Geocoding via OpenWeatherMap & Pencarian Kota via Emsifa API / Open-Meteo
+- **PWA:** [vite-plugin-pwa](https://vite-plugin-pwa.netlify.app/) (Progressive Web App)
 
 ---
 

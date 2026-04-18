@@ -40,8 +40,10 @@ function LiveClock() {
 
   return (
     <div className="live-clock">
-      <span className="clock-label">WIB</span>
-      <span className="clock-time">{time}</span>
+      <div className="clock-time-row">
+        <span className="clock-label">WIB</span>
+        <span className="clock-time">{time}</span>
+      </div>
       <span className="clock-date">{date}</span>
     </div>
   );
@@ -325,12 +327,30 @@ export default function App() {
       <div className="scanline-bg" />
       <div className="app-container app-grid">
         {/* ROW 1: HEADER */}
-        <header className="master-header">
-          <div className="header-left">
-            <h1 className="nerv-title">
-              <span className="nerv-title-full">D.O.M.E.N.I.C.O</span>
-              <span className="nerv-title-short">DOMENICO</span>
-            </h1>
+        <header className="nerv-header">
+          <h1 className="nerv-title">
+            <span className="nerv-title-full">D.O.M.E.N.I.C.O</span>
+            <span className="nerv-title-short">DOMENICO</span>
+          </h1>
+          <button
+            className="btn-mute"
+            onClick={toggleMute}
+            style={{
+              background: "transparent",
+              border: "1px solid var(--col-primary)",
+              color: "var(--col-primary)",
+              padding: "2px 6px",
+              fontSize: "10px",
+              cursor: "pointer",
+              fontFamily: "monospace",
+              height: "fit-content",
+              alignSelf: "center",
+            }}
+          >
+            {muted ? "[ UNMUTE ]" : "[ MUTE ]"}
+          </button>
+          
+          <div className="header-bottom-row">
             <div className="header-sub" style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
               <div>
                 <span className="live-dot"></span>REGION:{" "}
@@ -338,26 +358,7 @@ export default function App() {
               </div>
               <LiveClock />
             </div>
-          </div>
-          <div
-            className="header-right"
-            style={{ display: "flex", alignItems: "center", gap: "10px" }}
-          >
-            <button
-              onClick={toggleMute}
-              style={{
-                background: "transparent",
-                border: "1px solid var(--col-primary)",
-                color: "var(--col-primary)",
-                padding: "2px 6px",
-                fontSize: "10px",
-                cursor: "pointer",
-                fontFamily: "monospace",
-              }}
-            >
-              {muted ? "[ UNMUTE ]" : "[ MUTE ]"}
-            </button>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
               <div className="status-label">STATUS:</div>
               <div
                 className="status-value blink"
@@ -385,7 +386,7 @@ export default function App() {
                 className="target-loc-header"
                 style={{ marginBottom: "1rem" }}
               >
-                <span>
+                <span className="location-label">
                   <IconSearch /> TARGET ACQUISITION OVERRIDE
                 </span>
                 <div className="action-buttons">
@@ -406,7 +407,7 @@ export default function App() {
               {/* LEFT COLUMN */}
               <div className="main-panel-left dash-left nerv-panel">
                 <div className="target-loc-header location-row">
-                  <span>
+                  <span className="location-label">
                     <IconLocation /> TARGET LOCATION
                   </span>
                   <div className="action-buttons">
@@ -420,7 +421,7 @@ export default function App() {
                       </span>
                       {locateLabel[locateState]}
                     </button>
-                    <button onClick={() => setSearchOpen(true)}>
+                    <button className="btn-search" onClick={() => setSearchOpen(true)}>
                       <IconSearch /> SEARCH
                     </button>
                   </div>
@@ -604,7 +605,7 @@ export default function App() {
               [ ⌥ SOURCE ]
             </a>
           </div>
-          <div className="footer-right">
+          <div className="footer-right footer-uplink">
             <span className="uplink-box"></span> UPLINK ESTABLISHED
           </div>
         </footer>
